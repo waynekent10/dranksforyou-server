@@ -19,10 +19,12 @@ from rest_framework import routers
 
 from dranksforyouapi.views.auth import check_user, register_user
 from dranksforyouapi.views.user_view import UserView
+from dranksforyouapi.views import OrderView
 
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'users', UserView, 'user')
+router.register(r'orders', OrderView, 'order')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
