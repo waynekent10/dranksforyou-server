@@ -29,13 +29,13 @@ class BeverageView(ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
    
     def destroy(self, request, pk):
-        """Handle DELETE requests to delete an order"""
+        """Handle DELETE requests to delete a Beverage"""
         try:
             beverage = Beverage.objects.get(pk=pk)
             beverage.delete()
-            return Response({'message': 'Part deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'Beverage deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Beverage.DoesNotExist:
-            return Response({'message': 'Part not found'}, status=status.HTTP_404_NOT_FOUND)  
+            return Response({'message': 'Beverage not found'}, status=status.HTTP_404_NOT_FOUND)  
    
 class BeverageSerializer(serializers.ModelSerializer):
     class Meta:
