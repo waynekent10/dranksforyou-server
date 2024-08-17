@@ -43,9 +43,9 @@ class OrderView(ViewSet):
         try:
             order = Order.objects.get(pk=pk)
             order.delete()
-            return Response({'message': 'Part deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'Oder deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
-            return Response({'message': 'Part not found'}, status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
   
   
 class OrderSerializer(serializers.ModelSerializer):
