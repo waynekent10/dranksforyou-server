@@ -18,17 +18,15 @@ class OrderView(ViewSet):
     def create(self, request):
         """Handle POST operations"""
         try:
-            # Retrieve the user instance
+
             user = User.objects.get(pk=request.data['user_id'])
             
-            # Create a new order
             order = Order.objects.create(
                 user_id=user,
                 order_total=request.data['order_total'],
                 payment_type=request.data['payment_type']
             )
             
-            # Serialize the order and return the response
             serializer = OrderSerializer(order)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         

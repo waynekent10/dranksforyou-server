@@ -19,7 +19,7 @@ from rest_framework import routers
 
 from dranksforyouapi.views.auth import check_user, register_user
 from dranksforyouapi.views.user_view import UserView
-from dranksforyouapi.views import OrderView
+from dranksforyouapi.views.orders import OrderView
 
 
 router = routers.DefaultRouter(trailing_slash=False)
