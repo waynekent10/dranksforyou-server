@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import serializers, status
 from dranksforyouapi.models import Ingredient
 
-class LiquorView(ViewSet):
+class IngredientView(ViewSet):
     def retrieve(self,request, pk):
        ingredient = Ingredient.objects.get(pk=pk)
        serializer = IngredientSerializer(Ingredient, context={'request': request})
