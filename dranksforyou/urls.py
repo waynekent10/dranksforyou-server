@@ -21,12 +21,15 @@ from dranksforyouapi.views.auth import check_user, register_user
 from dranksforyouapi.views.user_view import UserView
 from dranksforyouapi.views.orders import OrderView
 from dranksforyouapi.views.beverages import BeverageView
-
+from dranksforyouapi.views.liquors import LiquorView
+from dranksforyouapi.views.ingredients import IngredientsView
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'users', UserView, 'user')
 router.register(r'orders', OrderView, 'order')
 router.register(r'beverages', BeverageView, 'beverage')
+router.register(r'liquors', LiquorView, 'liquor')
+router.register(r'ingredients', IngredientsView, 'ingredient')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
