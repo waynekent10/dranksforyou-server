@@ -7,7 +7,7 @@ from dranksforyouapi.models import Ingredient
 class IngredientView(ViewSet):
     def retrieve(self,request, pk):
        ingredient = Ingredient.objects.get(pk=pk)
-       serializer = IngredientSerializer(Ingredient, context={'request': request})
+       serializer = IngredientSerializer(ingredient, context={'request': request})
        return Response(serializer.data, status=status.HTTP_200_OK)
    
     def list(self, request): 
