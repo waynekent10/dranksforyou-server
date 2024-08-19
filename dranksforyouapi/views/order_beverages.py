@@ -22,7 +22,7 @@ class OrderBeverageView(ViewSet):
         
     def create(self, request):
             order = Order.objects.get(pk=request.data["order_id"])
-            beverage = Beverage.objects.get(pk=request.data['beverage'])
+            beverage = Beverage.objects.get(pk=request.data['beverage_id'])
             
             order_beverage = OrderBeverage.objects.create(
                 order= order,

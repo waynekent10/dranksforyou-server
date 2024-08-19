@@ -48,4 +48,4 @@ class LiquorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Liquor
         fields = ['id', 'name']
-        depth = 1
+        depth = 2

@@ -6,8 +6,8 @@ from dranksforyouapi.models import Order, User
 
 class OrderView(ViewSet):
     def retrieve(self,request, pk):
-       Order = Order.objects.get(pk=pk)
-       serializer = OrderSerializer(Order, context={'request': request})
+       order = Order.objects.get(pk=pk)
+       serializer = OrderSerializer(order, context={'request': request})
        return Response(serializer.data, status=status.HTTP_200_OK)
   
     def list(self, request): 
@@ -22,7 +22,7 @@ class OrderView(ViewSet):
             user = User.objects.get(pk=request.data['user_id'])
             
             order = Order.objects.create(
-                user_id=user,
+                user=user,
                 order_total=request.data['order_total'],
                 payment_type=request.data['payment_type']
             )
@@ -43,7 +43,7 @@ class OrderView(ViewSet):
         try:
             order = Order.objects.get(pk=pk)
             order.delete()
-            return Response({'message': 'Oder deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
         except Order.DoesNotExist:
             return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
   
@@ -51,5 +51,5 @@ class OrderView(ViewSet):
 class OrderSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
-        fields = ['id', 'user_id', 'order_total', 'payment_type']
+        fields = ['id', 'user', 'order_total', 'payment_type']
         depth = 2
