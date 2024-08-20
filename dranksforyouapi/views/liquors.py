@@ -7,7 +7,7 @@ from dranksforyouapi.models import Liquor
 class LiquorView(ViewSet):
     def retrieve(self,request, pk):
        liquor = Liquor.objects.get(pk=pk)
-       serializer = LiquorSerializer(Liquor, context={'request': request})
+       serializer = LiquorSerializer(liquor, context={'request': request})
        return Response(serializer.data, status=status.HTTP_200_OK)
    
     def list(self, request): 

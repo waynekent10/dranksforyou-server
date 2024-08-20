@@ -1,0 +1,13 @@
+[
+    {
+      "model": "dranksforyouapi.user",
+      "pk": 1,
+      "fields": {
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "username": "johndoe",
+        "admin": false,
+        "uid": "uid12345"
+      }
+    }
+  ]

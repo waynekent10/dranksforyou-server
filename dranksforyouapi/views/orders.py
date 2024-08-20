@@ -53,17 +53,17 @@ def update(self, request, pk):
     except User.DoesNotExist:
         return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-            
+    
 
     
-    def destroy(self, request, pk):
-        """Handle DELETE requests to delete an order"""
-        try:
-            order = Order.objects.get(pk=pk)
-            order.delete()
-            return Response({'message': 'Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
-        except Order.DoesNotExist:
-            return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+def destroy(self, request, pk):
+    """Handle DELETE requests to delete an order"""
+    try:
+        order = Order.objects.get(pk=pk)
+        order.delete()
+        return Response({'message': 'Order deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+    except Order.DoesNotExist:
+        return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
   
   
 class OrderSerializer(serializers.ModelSerializer):

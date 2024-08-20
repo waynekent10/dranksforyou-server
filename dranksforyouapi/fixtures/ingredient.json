@@ -1,0 +1,9 @@
+[
+    {
+      "model": "dranksforyouapi.ingredient",
+      "pk": 1,
+      "fields": {
+        "name": "Mango"
+      }
+    }
+]
