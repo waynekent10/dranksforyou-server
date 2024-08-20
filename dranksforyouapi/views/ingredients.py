@@ -18,7 +18,7 @@ class IngredientView(ViewSet):
     def create(self, request):
         """Handle POST operations"""
         ingredient = Ingredient.objects.create(
-        name=['name']
+        name=request.data['name']
         )
         serializer = IngredientSerializer(ingredient)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

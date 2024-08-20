@@ -1,0 +1,16 @@
+[
+    {
+      "model": "dranksforyouapi.liquor",
+      "pk": 1,
+      "fields": {
+        "name": "tequila"
+      }
+    },
+    {
+        "model": "dranksforyouapi.liquor",
+        "pk": 2,
+        "fields": {
+          "name": "rum"
+        }
+      }
+  ]

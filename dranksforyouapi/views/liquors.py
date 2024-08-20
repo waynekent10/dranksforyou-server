@@ -7,7 +7,7 @@ from dranksforyouapi.models import Liquor
 class LiquorView(ViewSet):
     def retrieve(self,request, pk):
        liquor = Liquor.objects.get(pk=pk)
-       serializer = LiquorSerializer(Liquor, context={'request': request})
+       serializer = LiquorSerializer(liquor, context={'request': request})
        return Response(serializer.data, status=status.HTTP_200_OK)
    
     def list(self, request): 
@@ -18,7 +18,7 @@ class LiquorView(ViewSet):
     def create(self, request):
         """Handle POST operations"""
         liquor = Liquor.objects.create(
-        name=['name']
+        name=request.data['name']
         )
         serializer = LiquorSerializer(liquor)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

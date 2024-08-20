@@ -37,6 +37,7 @@ class OrderBeverageView(ViewSet):
             return Response(status=status.HTTP_204_NO_CONTENT)
         
 class OrderBeverageSerializer(serializers.ModelSerializer):
+    
     class Meta:
         model = OrderBeverage
         fields = ('id', 'order_id', 'beverage_id')
