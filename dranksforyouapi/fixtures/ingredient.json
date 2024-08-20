@@ -5,5 +5,14 @@
       "fields": {
         "name": "Mango"
       }
-    }
-]
+
+    },
+    {
+        "model": "dranksforyouapi.ingredient",
+        "pk": 2,
+        "fields": {
+          "name": "Cherry"
+        }
+      }
+ ]
+

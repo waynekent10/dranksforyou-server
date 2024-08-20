@@ -24,7 +24,7 @@ class BeverageView(ViewSet):
         """Handle POST requests to create a new beverage"""
         try:
             beverage = Beverage.objects.create(
-                beverage_name=request.data["name"],
+                name=request.data["name"],
                 liquor_id=request.data["liquor_id"],
                 ingredient_id=request.data["ingredient_id"],
                 description=request.data["description"],
@@ -39,7 +39,7 @@ class BeverageView(ViewSet):
         """Handle PUT requests to update a beverage"""
         try:
             beverage = Beverage.objects.get(pk=pk)
-            beverage.beverage_name = request.data.get("name", beverage.beverage_name)
+            beverage.name = request.data.get("name", beverage.name)
             beverage.liquor_id = request.data.get("liquor_id", beverage.liquor_id)
             beverage.ingredient_id = request.data.get("ingredient_id", beverage.ingredient_id)
             beverage.description = request.data.get("description", beverage.description)
@@ -63,5 +63,5 @@ class BeverageView(ViewSet):
 class BeverageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Beverage
-        fields = ['id', 'beverage_name', 'ingredient_id', 'description', 'price']
+        fields = ['id', 'name', 'ingredient_id', 'liquor_id', 'description', 'price']
         depth = 2

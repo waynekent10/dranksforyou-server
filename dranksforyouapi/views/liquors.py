@@ -18,7 +18,7 @@ class LiquorView(ViewSet):
     def create(self, request):
         """Handle POST operations"""
         liquor = Liquor.objects.create(
-        name=['name']
+        name=request.data['name']
         )
         serializer = LiquorSerializer(liquor)
         return Response(serializer.data, status=status.HTTP_201_CREATED)

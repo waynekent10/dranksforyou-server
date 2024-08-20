@@ -7,7 +7,18 @@
         "email": "john.doe@example.com",
         "username": "johndoe",
         "admin": false,
-        "uid": "uid12345"
+        "uid": "2"
       }
-    }
-  ]
+    },
+    {
+        "model": "dranksforyouapi.user",
+        "pk": 2,
+        "fields": {
+          "name": "Bruce ",
+          "email": "abc123@ab.com",
+          "username": "waynekent",
+          "admin": false,
+          "uid": "2"
+        }
+      }
+]
