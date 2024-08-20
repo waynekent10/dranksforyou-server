@@ -35,6 +35,24 @@ class OrderView(ViewSet):
         except Exception as e:
             return Response({'message': str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+def update(self, request, pk):
+    """Handle PUT requests to update an order"""
+    try:
+        order = Order.objects.get(pk=pk)
+
+        user = User.objects.get(pk=request.data['user_id'])
+        order.user = user
+        order.order_total = request.data['order_total']
+        order.payment_type = request.data['payment_type']
+        order.save()
+        serializer = OrderSerializer(order)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    except Order.DoesNotExist:
+        return Response({'message': 'Order not found'}, status=status.HTTP_404_NOT_FOUND)
+    except User.DoesNotExist:
+        return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
             
 
     

@@ -28,6 +28,22 @@ class BeverageView(ViewSet):
         serializer = BeverageSerializer(beverage)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
    
+def update(self, request, pk):
+    """Handle PUT requests to update a beverage"""
+    try:
+        beverage = Beverage.objects.get(pk=pk)
+        beverage.beverage_name = request.data.get("name", beverage.beverage_name)
+        beverage.liquor_id = request.data.get("liquor_id", beverage.liquor_id)
+        beverage.ingredients = request.data.get("ingredients", beverage.ingredients)
+        beverage.description = request.data.get("description", beverage.description)
+        beverage.price = request.data.get("price", beverage.price)
+        beverage.save()
+        
+        serializer = BeverageSerializer(beverage)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    except Beverage.DoesNotExist:
+        return Response({'message': 'Beverage not found'}, status=status.HTTP_404_NOT_FOUND)
+
     def destroy(self, request, pk):
         """Handle DELETE requests to delete a Beverage"""
         try:
