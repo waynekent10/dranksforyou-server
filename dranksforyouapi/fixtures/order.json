@@ -1,0 +1,11 @@
+[
+    {
+      "model": "dranksforyouapi.order",
+      "pk": 1,
+      "fields": {
+        "user": 1,
+        "order_total": 20.00,
+        "payment_type": "cash"
+      }
+    }
+]

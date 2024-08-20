@@ -1,0 +1,36 @@
+[
+    {
+      "model": "dranksforyouapi.beverage",
+      "pk": 1,
+      "fields": {
+        "name": "Blue Raspberry Apple",
+        "liquor_id": "2",
+        "ingredient_id": "1",
+        "description": "A blue drank",
+        "price": "$10.00"
+      }
+    },
+    {
+      "model": "dranksforyouapi.beverage",
+      "pk": 2,
+      "fields": {
+        "name": "Mango",
+        "liquor_id": "1",
+        "ingredient_id": "3",
+        "description": "A pleasant experience",
+        "price": "$10.00"
+      }
+    },
+    {
+      "model": "dranksforyouapi.beverage",
+      "pk": 3,
+      "fields": {
+        "name": "Cherry Strawberry",
+        "liquor_id": "4",
+        "ingredient_id": "2",
+        "description": "A pleasant experience",
+        "price": "$10.00"
+      }
+    }
+  ]
+  
