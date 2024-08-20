@@ -12,8 +12,8 @@ class OrderBeverageView(ViewSet):
             order_beverage = OrderBeverage.objects.get(pk=pk)
             serializer = OrderBeverageSerializer(order_beverage)
             return Response(serializer.data)
-        except order_beverage.DoesNotExist:
-            return Response({'message': 'orderbeverage not found'}, status=status.HTTP_404_NOT_FOUND)
+        except OrderBeverage.DoesNotExist:
+            return Response({'message': 'order beverage not found'}, status=status.HTTP_404_NOT_FOUND)
         
     def list (self, request):
             order_beverages=OrderBeverage.objects.all()
@@ -29,7 +29,7 @@ class OrderBeverageView(ViewSet):
                 beverage = beverage
             )
             
-            serializer = OrderBeverage(order_beverage)
+            serializer = OrderBeverageSerializer(order_beverage)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
     def destroy(self, request, pk):
             order_beverage = OrderBeverage.objects.get(pk=pk)
