@@ -10,7 +10,7 @@ class OrderBeverageView(ViewSet):
     def retrieve(self, request, pk):
         try:
             order_beverage = OrderBeverage.objects.get(pk=pk)
-            serializer = OrderBeverage(order_beverage)
+            serializer = OrderBeverageSerializer(order_beverage)
             return Response(serializer.data)
         except order_beverage.DoesNotExist:
             return Response({'message': 'orderbeverage not found'}, status=status.HTTP_404_NOT_FOUND)
