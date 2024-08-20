@@ -4,7 +4,7 @@
       "pk": 1,
       "fields": {
         "user_id": "1",
-        "order_total": "$20.00",
+        "order_total": "20.00",
         "payment_type": "cash"
       }
     },
@@ -13,7 +13,7 @@
         "pk": 2,
         "fields": {
           "user_id": "2",
-          "order_total": "$20.00",
+          "order_total": "20.00",
           "payment_type": "credit"
         }
       }
