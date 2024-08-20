@@ -53,7 +53,7 @@ def update(self, request, pk):
     except User.DoesNotExist:
         return Response({'message': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-            
+    
 
     
 def destroy(self, request, pk):

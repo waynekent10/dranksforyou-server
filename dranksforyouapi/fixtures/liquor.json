@@ -5,6 +5,7 @@
       "fields": {
         "name": "tequila"
       }
+
     },
     {
         "model": "dranksforyouapi.liquor",
@@ -13,4 +14,4 @@
           "name": "rum"
         }
       }
-  ]
+]

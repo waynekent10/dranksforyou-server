@@ -18,6 +18,7 @@
         "liquor_id": "1",
         "ingredient_id": "3",
         "description": "The name says it all",
+
         "price": "$10.00"
       }
     },
@@ -33,4 +34,3 @@
       }
     }
   ]
-  

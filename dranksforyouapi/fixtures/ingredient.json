@@ -5,6 +5,7 @@
       "fields": {
         "name": "Mango"
       }
+
     },
     {
         "model": "dranksforyouapi.ingredient",
@@ -13,5 +14,5 @@
           "name": "Cherry"
         }
       }
-  ]
-  
+ ]
+
