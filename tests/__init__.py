@@ -1,0 +1,6 @@
+from beverages_test import BeverageViewTests
+from ingredients_test import IngredientViewTests
+from liquors_test import LiquorViewTests
+from order_beverages_test import OrderBeverageViewTests
+from orders_test import OrderViewTests
+from user_view_test import UserViewTests
