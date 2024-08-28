@@ -9,7 +9,7 @@ class LiquorViewTests(APITestCase):
     def setUp(self):
             self.user = User.objects.create (name='John Doe', email='john@example.com', username='johndoe', uid='12345')
             self.liqour = Liquor.objects.create(
-            name="vanilla vodka",
+            name="vodka",
         )
 
     def test_create_liquor(self):
@@ -45,7 +45,7 @@ class LiquorViewTests(APITestCase):
 
     def test_list_liquors(self):
         """Test list liquors"""
-        url = '/liquors'
+        url = "/liquors"
 
         response = self.client.get(url)
         
@@ -77,7 +77,7 @@ class LiquorViewTests(APITestCase):
         self.assertEqual(updated_liquor['name'], liquor.name)
 
     def test_delete_liquor(self):
-        """Test delete game"""
+        """Test delete liquor"""
         liquor = Liquor.objects.first()
 
         url = f'/liquors/{liquor.id}'

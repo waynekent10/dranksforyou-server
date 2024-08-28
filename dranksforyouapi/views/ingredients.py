@@ -6,10 +6,13 @@ from dranksforyouapi.models import Ingredient
 
 class IngredientView(ViewSet):
     def retrieve(self,request, pk):
-       ingredient = Ingredient.objects.get(pk=pk)
-       serializer = IngredientSerializer(ingredient, context={'request': request})
-       return Response(serializer.data, status=status.HTTP_200_OK)
-   
+        try:
+            ingredient = Ingredient.objects.get(pk=pk)
+            serializer = IngredientSerializer(ingredient, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Ingredient.DoesNotExist:
+            return Response({'message': 'Ingredient not found'}, status=status.HTTP_404_NOT_FOUND)
+    
     def list(self, request): 
         ingredients = Ingredient.objects.all()
         serializer = IngredientSerializer(ingredients, many=True)
@@ -17,17 +20,17 @@ class IngredientView(ViewSet):
     
     def create(self, request):
         """Handle POST operations"""
-        ingredient = Ingredient.objects.create(
-        name=request.data['name']
-        )
-        serializer = IngredientSerializer(ingredient)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = IngredientSerializer(data=request.data)
+        if serializer.is_valid():
+            ingredient = serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
      
     def update(self, request, pk):
         try:
             ingredient = Ingredient.objects.get(pk=pk)
         except Ingredient.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
+            return Response({'message': 'Ingredient not found'}, status=status.HTTP_404_NOT_FOUND)
         
         serializer = IngredientSerializer(ingredient, data=request.data, partial=True)
         if serializer.is_valid():
@@ -36,7 +39,7 @@ class IngredientView(ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk):
-        """Handle DELETE requests to delete an order"""
+        """Handle DELETE requests to delete an ingredient"""
         try:
             ingredient = Ingredient.objects.get(pk=pk)
             ingredient.delete()

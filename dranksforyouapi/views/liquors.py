@@ -6,10 +6,13 @@ from dranksforyouapi.models import Liquor
 
 class LiquorView(ViewSet):
     def retrieve(self,request, pk):
-       liquor = Liquor.objects.get(pk=pk)
-       serializer = LiquorSerializer(liquor, context={'request': request})
-       return Response(serializer.data, status=status.HTTP_200_OK)
-   
+        try:
+            liquor = Liquor.objects.get(pk=pk)
+            serializer = LiquorSerializer(liquor, context={'request': request})
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Liquor.DoesNotExist:
+            return Response({'message': 'Liquor not found'}, status=status.HTTP_404_NOT_FOUND)
+    
     def list(self, request): 
         liquors = Liquor.objects.all()
         serializer = LiquorSerializer(liquors, many=True)
@@ -17,26 +20,25 @@ class LiquorView(ViewSet):
     
     def create(self, request):
         """Handle POST operations"""
-        liquor = Liquor.objects.create(
-        name=request.data['name']
-        )
-        serializer = LiquorSerializer(liquor)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        serializer = LiquorSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
      
     def update(self, request, pk):
         try:
             liquor = Liquor.objects.get(pk=pk)
+            serializer = LiquorSerializer(liquor, data=request.data, partial=True)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         except Liquor.DoesNotExist:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        
-        serializer = LiquorSerializer(liquor, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'message': 'Liquor not found'}, status=status.HTTP_404_NOT_FOUND)
 
     def destroy(self, request, pk):
-        """Handle DELETE requests to delete an order"""
+        """Handle DELETE requests to delete a liquor"""
         try:
             liquor = Liquor.objects.get(pk=pk)
             liquor.delete()
@@ -48,4 +50,4 @@ class LiquorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Liquor
         fields = ['id', 'name']
-        depth = 2
+        depth = 1

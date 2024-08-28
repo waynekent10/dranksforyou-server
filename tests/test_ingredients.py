@@ -1,3 +1,4 @@
+from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from dranksforyouapi.models import Ingredient, User
@@ -5,7 +6,7 @@ from dranksforyouapi.views.ingredients import IngredientSerializer
 
 class IngredientTests(APITestCase):
     
-    fixtures = ['ingredient', 'user']
+    fixtures = ['ingredient']
     
     def setUp(self):
             self.user = User.objects.create (name='John Doe', email='john@example.com', username='johndoe', uid='12345')
@@ -17,7 +18,7 @@ class IngredientTests(APITestCase):
         """Test creating an ingredient"""
         url = "/ingredients"
         ingredient = {
-            "name": "Pepper"
+            "name": "Cherry"
         }
 
         response = self.client.post(url, ingredient, format='json')
@@ -50,7 +51,7 @@ class IngredientTests(APITestCase):
 
         response = self.client.get(url)
         
-        # Get all the games in the database and serialize them to get the expected output
+
         all_ingredients = Ingredient.objects.all()
         expected = IngredientSerializer(all_ingredients, many=True)
 
@@ -79,7 +80,7 @@ class IngredientTests(APITestCase):
         self.assertEqual(updated_ingredient['name'], ingredient.name)
 
     def test_delete_ingredient(self):
-        """Test delete game"""
+        """Test delete ingredient"""
         ingredient = Ingredient.objects.first()
 
         url = f'/ingredients/{ingredient.id}'
