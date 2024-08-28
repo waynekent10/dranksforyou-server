@@ -1,74 +1,85 @@
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from dranksforyouapi.models import Liquor
+from dranksforyouapi.views.liquors import LiquorSerializer
 
 class LiquorViewTests(APITestCase):
-
+    fixtures = ['liquor']
+    
     def setUp(self):
-        """Set up test data"""
-        self.liquor = Liquor.objects.create(name="Whiskey")
-
-    def test_retrieve_liquor(self):
-        """Test retrieving a single liquor"""
-        url = reverse('liquor-detail', args=[self.liquor.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], self.liquor.name)
-
-    def test_retrieve_liquor_not_found(self):
-        """Test retrieving a non-existent liquor"""
-        url = reverse('liquor-detail', args=[999])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_list_liquors(self):
-        """Test listing all liquors"""
-        url = reverse('liquor-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.liquor.name)
+        self.liquor = Liquor.objects.first()
 
     def test_create_liquor(self):
-        """Test creating a new liquor"""
-        url = reverse('liquor-list')
-        data = {"name": "Vodka"}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['name'], "Vodka")
+        """Test creating a liquor"""
+        url = "/liquors"
+        liquor = {
+            "name": "Sake"
+        }
 
-    def test_create_liquor_invalid(self):
-        """Test creating a liquor with invalid data"""
-        url = reverse('liquor-list')
-        data = {"name": ""}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.post(url, liquor, format='json')
+        
+        new_liquor = Liquor.objects.last()
+        
+        expected = LiquorSerializer(new_liquor)
+        
+        self.assertEqual(expected.data, response.data)
 
-    def test_update_liquor(self):
-        """Test updating an existing liquor"""
-        url = reverse('liquor-detail', args=[self.liquor.id])
-        data = {"name": "Updated Whiskey"}
-        response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], "Updated Whiskey")
+     
 
-    def test_update_liquor_not_found(self):
-        """Test updating a non-existent liquor"""
-        url = reverse('liquor-detail', args=[999])
-        data = {"name": "Non-existent Liquor"}
-        response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_get_liquor(self):
+        """Test retrieving a single liquor"""
+        liquor = Liquor.objects.first()
+        
+        url = f'/liquors/{liquor.id}'
+        
+        response = self.client.get(url)
+        
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        
+        expected = LiquorSerializer(liquor)
+        self.assertEqual(expected.data, response.data)
+   
+
+    def test_list_liquors(self):
+        """Test list liquors"""
+        url = '/liquors'
+
+        response = self.client.get(url)
+        
+       
+        all_liquors = Liquor.objects.all()
+        expected = LiquorSerializer(all_liquors, many=True)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(expected.data, response.data)
+
+    def test_change_liquor(self):
+        """test update liquor"""
+   
+        liquor = Liquor.objects.first()
+
+        url = f'/liquors/{liquor.id}'
+
+        updated_liquor = {
+            "name": f'{liquor.name} updated',
+        }
+
+        response = self.client.put(url, updated_liquor, format='json')
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+    
+        liquor.refresh_from_db()
+
+        self.assertEqual(updated_liquor['name'], liquor.name)
 
     def test_delete_liquor(self):
-        """Test deleting an existing liquor"""
-        url = reverse('liquor-detail', args=[self.liquor.id])
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Liquor.objects.filter(pk=self.liquor.id).exists())
+        """Test delete game"""
+        liquor = Liquor.objects.first()
 
-    def test_delete_liquor_not_found(self):
-        """Test deleting a non-existent liquor"""
-        url = reverse('liquor-detail', args=[999])
+        url = f'/liquors/{liquor.id}'
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)

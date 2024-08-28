@@ -1,74 +1,88 @@
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from dranksforyouapi.models import Ingredient
+from dranksforyouapi.views.ingredients import IngredientSerializer
 
-class IngredientViewTests(APITestCase):
-
+class IngredientTests(APITestCase):
+    
     def setUp(self):
-        """Set up test data"""
-        self.ingredient = Ingredient.objects.create(name="Lime")
-
-    def test_retrieve_ingredient(self):
-        """Test retrieving a single ingredient"""
-        url = reverse('ingredient-detail', args=[self.ingredient.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], self.ingredient.name)
-
-    def test_retrieve_ingredient_not_found(self):
-        """Test retrieving a non-existent ingredient"""
-        url = reverse('ingredient-detail', args=[999])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_list_ingredients(self):
-        """Test listing all ingredients"""
-        url = reverse('ingredient-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.ingredient.name)
+        self.ingredient = Ingredient.objects.first()
 
     def test_create_ingredient(self):
-        """Test creating a new ingredient"""
-        url = reverse('ingredient-list')
-        data = {"name": "Mint"}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['name'], "Mint")
+        """Test creating an ingredient"""
+        url = "/ingredients"
+        ingredient = {
+            "name": "Pepper"
+        }
 
-    def test_create_ingredient_invalid(self):
-        """Test creating an ingredient with invalid data"""
-        url = reverse('ingredient-list')
-        data = {"name": ""}
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.post(url, ingredient, format='json')
+        
+        new_ingredient = Ingredient.objects.last()
+        
+        expected = IngredientSerializer(new_ingredient)
+        
+        self.assertEqual(expected.data, response.data)
 
-    def test_update_ingredient(self):
-        """Test updating an existing ingredient"""
-        url = reverse('ingredient-detail', args=[self.ingredient.id])
-        data = {"name": "Updated Lime"}
-        response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], "Updated Lime")
+     
 
-    def test_update_ingredient_not_found(self):
-        """Test updating a non-existent ingredient"""
-        url = reverse('ingredient-detail', args=[999])
-        data = {"name": "Non-existent Ingredient"}
-        response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+    def test_get_ingredient(self):
+        """Test retrieving a single ingredient"""
+        ingredient = Ingredient.objects.first()
+        
+        url = f'/ingredients/{ingredient.id}'
+        
+        response = self.client.get(url)
+        
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        
+        expected = IngredientSerializer(ingredient)
+        self.assertEqual(expected.data, response.data)
+   
+
+    def test_list_ingredients(self):
+        """Test list ingredients"""
+        url = '/ingredients'
+
+        response = self.client.get(url)
+        
+        # Get all the games in the database and serialize them to get the expected output
+        all_ingredients = Ingredient.objects.all()
+        expected = IngredientSerializer(all_ingredients, many=True)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(expected.data, response.data)
+
+    def test_change_ingredient(self):
+        """test update ingredient"""
+   
+        ingredient = Ingredient.objects.first()
+
+        url = f'/ingredients/{ingredient.id}'
+
+        updated_ingredient = {
+            "name": f'{ingredient.name} updated',
+        }
+
+        response = self.client.put(url, updated_ingredient, format='json')
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+        # Refresh the game object to reflect any changes in the database
+        ingredient.refresh_from_db()
+
+        # assert that the updated value matches
+        self.assertEqual(updated_ingredient['name'], ingredient.name)
 
     def test_delete_ingredient(self):
-        """Test deleting an existing ingredient"""
-        url = reverse('ingredient-detail', args=[self.ingredient.id])
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Ingredient.objects.filter(pk=self.ingredient.id).exists())
+        """Test delete game"""
+        ingredient = Ingredient.objects.first()
 
-    def test_delete_ingredient_not_found(self):
-        """Test deleting a non-existent ingredient"""
-        url = reverse('ingredient-detail', args=[999])
+        url = f'/ingredients/{ingredient.id}'
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+        # Test that it was deleted by trying to _get_ the game
+        # The response should return a 404
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)

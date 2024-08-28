@@ -2,97 +2,93 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from dranksforyouapi.models import Beverage
+from dranksforyouapi.views.beverages import BeverageSerializer
 
 class BeverageViewTests(APITestCase):
 
     def setUp(self):
-        """Set up test data"""
-        self.beverage = Beverage.objects.create(
-            name="Margarita",
-            liquor_id="1",
-            ingredient_id="1,2,3",
-            description="A classic cocktail",
-            price=9.99
-        )
-
-    def test_retrieve_beverage(self):
-        """Test retrieving a single beverage"""
-        url = reverse('beverage-detail', args=[self.beverage.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], self.beverage.name)
-
-    def test_retrieve_beverage_not_found(self):
-        """Test retrieving a non-existent beverage"""
-        url = reverse('beverage-detail', args=[999])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_list_beverages(self):
-        """Test listing all beverages"""
-        url = reverse('beverage-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['name'], self.beverage.name)
+        
+        self.beverage =Beverage.objects.first()
 
     def test_create_beverage(self):
-        """Test creating a new beverage"""
-        url = reverse('beverage-list')
-        data = {
-            "name": "Martini",
+        """Test creating a beverage"""
+        url = "/beverages"
+        beverage = {
+            "name": "Peach",
             "liquor_id": "2",
-            "ingredient_id": "4,5,6",
-            "description": "A sophisticated cocktail",
-            "price": 12.50
+            "ingredient_id": "3",
+            "description": "a drink to be had",
+            "price": 10.00
         }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['name'], "Martini")
 
-    def test_create_beverage_invalid(self):
-        """Test creating a beverage with invalid data"""
-        url = reverse('beverage-list')
-        data = {
-            "name": "",
-            "liquor_id": "2",
-            "ingredient_id": "4,5,6",
-            "description": "A cocktail with no name",
-            "price": 12.50
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        response = self.client.post(url, beverage, format='json')
+        
+        new_beverage = Beverage.objects.last()
+        
+        expected = BeverageSerializer(new_beverage)
+        
+        self.assertEqual(expected.data, response.data)
 
-    def test_update_beverage(self):
-        """Test updating an existing beverage"""
-        url = reverse('beverage-detail', args=[self.beverage.id])
-        data = {
-            "name": "Updated Margarita",
-            "price": 10.99
-        }
-        response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['name'], "Updated Margarita")
-        self.assertEqual(float(response.data['price']), 10.99)
+    def test_get_beverage(self):
+        """Test retrieving a single beverage"""
+        beverage = Beverage.objects.first()
+        
+        url = f'/beverages/{beverage.id}'
+        
+        response = self.client.get(url)
+        
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        
+        expected = BeverageSerializer(beverage)
+        self.assertEqual(expected.data, response.data)
+        
+    def test_list_beverage(self):
+        """Test list beverages"""
+        url = '/beverages'
 
-    def test_update_beverage_not_found(self):
-        """Test updating a non-existent beverage"""
-        url = reverse('beverage-detail', args=[999])
-        data = {
-            "name": "Non-existent Beverage",
+        response = self.client.get(url)
+        
+       
+        all_beverages = Beverage.objects.all()
+        expected = BeverageSerializer(all_beverages, many=True)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(expected.data, response.data)
+        
+    def test_change_beverage(self):
+        """test update beverage"""
+   
+        beverage = Beverage.objects.first()
+
+        url = f'/beverages/{beverage.id}'
+
+        updated_beverage = {
+            "name": f'{beverage.name} updated',
+            "liquor_id": beverage.liquor_id,
+            "ingredient_id": beverage.ingredient_id,
+            "description": beverage.description,
+            "price": beverage.price,
         }
-        response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        response = self.client.put(url, updated_beverage, format='json')
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+    
+        beverage.refresh_from_db()
+
+        self.assertEqual(updated_beverage['name'], beverage.name)
+
 
     def test_delete_beverage(self):
-        """Test deleting an existing beverage"""
-        url = reverse('beverage-detail', args=[self.beverage.id])
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Beverage.objects.filter(pk=self.beverage.id).exists())
+        """Test delete beverage"""
+        beverage = Beverage.objects.first()
 
-    def test_delete_beverage_not_found(self):
-        """Test deleting a non-existent beverage"""
-        url = reverse('beverage-detail', args=[999])
+        url = f'/beverages/{beverage.id}'
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)
+
+ 

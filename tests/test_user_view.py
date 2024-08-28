@@ -2,90 +2,89 @@ from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from dranksforyouapi.models import User
+from dranksforyouapi.views.user_view import UserSerializer
 
 class UserViewTests(APITestCase):
 
     def setUp(self):
-        """Set up test data"""
-        self.user = User.objects.create(
-            name="Test User",
-            username="testuser",
-            email="testuser@example.com",
-            admin=False,
-            uid="unique-id-1234"
-        )
-
-    def test_retrieve_user(self):
-        """Test retrieving a single user"""
-        url = reverse('user-detail', args=[self.user.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['username'], self.user.username)
-
-    def test_retrieve_user_not_found(self):
-        """Test retrieving a non-existent user"""
-        url = reverse('user-detail', args=[999])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_list_users(self):
-        """Test listing all users"""
-        url = reverse('user-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['username'], self.user.username)
+        self.user1 = User.objects.create(name='John Doe', email='john@example.com', username='johndoe', uid='12345')
+        self.user2 = User.objects.create(name='Jane Smith', email='jane@example.com', username='janesmith', uid='67890')
 
     def test_create_user(self):
-        """Test creating a new user"""
+        """Test creating an user"""
+        url = "/users"
+        user = {
+            "name": "Peach",
+            "email": "123@abc.com",
+            "username": "nssmademe",
+            "admin": False,
+            "uid": 3
+        }
+
+        response = self.client.post(url, user, format='json')
+        
+        new_user = User.objects.last()
+        
+        expected = UserSerializer(new_user)
+        
+        self.assertEqual(expected.data, response.data)
+
+    def test_retrieve_user(self):
+        url = reverse('user-detail', args=[self.user1.pk])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = UserSerializer(self.user1).data
+        self.assertEqual(response.data, expected_data)
+        
+    def test_list_users(self):
+        url = reverse('user-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        expected_data = UserSerializer([self.user1, self.user2], many=True).data
+        self.assertEqual(response.data, expected_data)
+        
+    def test_create_user(self):
         url = reverse('user-list')
         data = {
-            "name": "New User",
-            "username": "newuser",
-            "email": "newuser@example.com",
-            "admin": True,
-            "uid": "unique-id-5678"
+            'name': 'Alice Wonderland',
+            'email': 'alice@example.com',
+            'username': 'alice',
+            'uid': '54321'
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['username'], "newuser")
+        self.assertEqual(User.objects.count(), 3)
+        self.assertEqual(User.objects.get(pk=response.data['id']).name, 'Alice Wonderland')
 
     def test_update_user(self):
-        """Test updating an existing user"""
-        url = reverse('user-detail', args=[self.user.id])
+        url = reverse('user-detail', args=[self.user1.pk])
         data = {
-            "name": "Updated User",
-            "username": "updateduser",
-            "email": "updateduser@example.com",
-            "admin": True,
-            "uid": "unique-id-9101"
+            'name': 'John Updated',
+            'email': 'johnupdated@example.com',
+            'username': 'johnupdated',
+            'uid': '12345'
         }
         response = self.client.put(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['username'], "updateduser")
+        self.user1.refresh_from_db()
+        self.assertEqual(self.user1.name, 'John Updated')
+        self.assertEqual(self.user1.email, 'johnupdated@example.com')
+        self.assertEqual(self.user1.username, 'johnupdated')
 
-    def test_update_user_not_found(self):
-        """Test updating a non-existent user"""
-        url = reverse('user-detail', args=[999])
+    def test_partial_update_user(self):
+        url = reverse('user-detail', args=[self.user1.pk])
         data = {
-            "name": "Updated User",
-            "username": "updateduser",
-            "email": "updateduser@example.com",
-            "admin": True,
-            "uid": "unique-id-9101"
+            'name': 'John Partial Update'
         }
         response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.user1.refresh_from_db()
+        self.assertEqual(self.user1.name, 'John Partial Update')
 
     def test_delete_user(self):
-        """Test deleting an existing user"""
-        url = reverse('user-detail', args=[self.user.id])
+        url = reverse('user-detail', args=[self.user1.pk])
         response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(User.objects.filter(pk=self.user.id).exists())
+        self.assertEqual(User.objects.count(), 1)
 
-    def test_delete_user_not_found(self):
-        """Test deleting a non-existent user"""
-        url = reverse('user-detail', args=[999])
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+ 

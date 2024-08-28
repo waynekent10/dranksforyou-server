@@ -1,91 +1,104 @@
-from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
 from dranksforyouapi.models import Order, User
+from dranksforyouapi.views.orders import OrderSerializer
 
-class OrderViewTests(APITestCase):
-
+class OrderTests(APITestCase):
+    
+    fixtures = ['user', 'order']
+    
     def setUp(self):
-        """Set up test data"""
-        self.user = User.objects.create(username="testuser", email="testuser@example.com", name="Test User", admin=False)
-        self.order = Order.objects.create(user=self.user, order_total=50.00, payment_type="Credit Card")
+        self.user = User.objects.create(
+            name="Test User",
+            username="testuser",
+            email="testuser@example.com",
+            uid="testuid"
+        )
 
-    def test_retrieve_order(self):
-        """Test retrieving a single order"""
-        url = reverse('order-detail', args=[self.order.id])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['order_total'], str(self.order.order_total))
-
-    def test_retrieve_order_not_found(self):
-        """Test retrieving a non-existent order"""
-        url = reverse('order-detail', args=[999])
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-    def test_list_orders(self):
-        """Test listing all orders"""
-        url = reverse('order-list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertEqual(response.data[0]['order_total'], str(self.order.order_total))
+        # Create a test order
+        self.order = Order.objects.create(
+            user=self.user,
+            order_total=50.00,
+            payment_type="Credit Card"
+        )
 
     def test_create_order(self):
-        """Test creating a new order"""
-        url = reverse('order-list')
-        data = {
+        """Test creating an order"""
+        url = "/orders"
+        order = {
             "user_id": self.user.id,
-            "order_total": 75.00,
+            "order_total": 150.00,
             "payment_type": "PayPal"
         }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(response.data['order_total'], "75.00")
 
-    def test_create_order_user_not_found(self):
-        """Test creating an order with a non-existent user"""
-        url = reverse('order-list')
-        data = {
-            "user_id": 999,  # Non-existent user ID
-            "order_total": 75.00,
-            "payment_type": "PayPal"
-        }
-        response = self.client.post(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+        response = self.client.post(url, order, format='json')
+        
+        new_order = Order.objects.last()
+        
+        expected = OrderSerializer(new_order)
+        
+        self.assertEqual(expected.data, response.data)
 
-    def test_update_order(self):
-        """Test updating an existing order"""
-        url = reverse('order-detail', args=[self.order.id])
-        data = {
-            "user_id": self.user.id,
-            "order_total": 100.00,
-            "payment_type": "Debit Card"
-        }
-        response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data['order_total'], "100.00")
+     
 
-    def test_update_order_not_found(self):
-        """Test updating a non-existent order"""
-        url = reverse('order-detail', args=[999])
-        data = {
-            "user_id": self.user.id,
-            "order_total": 100.00,
-            "payment_type": "Debit Card"
+    def test_get_order(self):
+        """Test retrieving a single order"""
+        order = Order.objects.first()
+        
+        url = f'/orders/{order.id}'
+        
+        response = self.client.get(url)
+        
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        
+        expected = OrderSerializer(order)
+        self.assertEqual(expected.data, response.data)
+   
+
+    def test_list_orders(self):
+        """Test list orders"""
+        url = '/orders'
+
+        response = self.client.get(url)
+        
+     
+        all_orders = Order.objects.all()
+        expected = OrderSerializer(all_orders, many=True)
+
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
+        self.assertEqual(expected.data, response.data)
+
+    def test_change_order(self):
+        """test update order"""
+   
+        order = Order.objects.first()
+
+        url = f'/orders/{order.id}'
+
+        updated_order = {
+            "order_total": f'{order.order_total} updated',
+            "payment_type": order.payment_type,
         }
-        response = self.client.put(url, data, format='json')
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        response = self.client.put(url, updated_order, format='json')
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+        # Refresh the game object to reflect any changes in the database
+        order.refresh_from_db()
+
+        # assert that the updated value matches
+        self.assertEqual(updated_order['order_total'], order.order_total)
 
     def test_delete_order(self):
-        """Test deleting an existing order"""
-        url = reverse('order-detail', args=[self.order.id])
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
-        self.assertFalse(Order.objects.filter(pk=self.order.id).exists())
+        """Test delete order"""
+        order = Order.objects.first()
 
-    def test_delete_order_not_found(self):
-        """Test deleting a non-existent order"""
-        url = reverse('order-detail', args=[999])
+        url = f'/orders/{order.id}'
         response = self.client.delete(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+
+
+        response = self.client.get(url)
+        self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)

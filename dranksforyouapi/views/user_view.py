@@ -25,7 +25,7 @@ class UserView(ViewSet):
             name=request.data["name"],
             username=request.data["username"],
             email=request.data["email"],
-            admin=request.data["admin"],
+            admin=request.data.get("admin", False),
             uid=request.data["uid"]
         )
         serializer = UserSerializer(user)
