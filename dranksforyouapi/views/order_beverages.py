@@ -21,8 +21,8 @@ class OrderBeverageView(ViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         
     def create(self, request):
-            order = Order.objects.get(pk=request.data["order_id"])
-            beverage = Beverage.objects.get(pk=request.data['beverage_id'])
+            order = Order.objects.get(pk=request.data["order"])
+            beverage = Beverage.objects.get(pk=request.data['beverage'])
             
             order_beverage = OrderBeverage.objects.create(
                 order= order,
@@ -40,6 +40,6 @@ class OrderBeverageSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = OrderBeverage
-        fields = ('id', 'order_id', 'beverage_id')
+        fields = ('id', 'order', 'beverage')
         depth = 1
             
