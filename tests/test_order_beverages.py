@@ -1,20 +1,26 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from dranksforyouapi.models import OrderBeverage
+from dranksforyouapi.models import OrderBeverage, User
 from dranksforyouapi.views.order_beverages import OrderBeverageSerializer
 
 class OrderBeverageViewTests(APITestCase):
 
     def setUp(self):
         
-        self.beverage =OrderBeverage.objects.first()
+            self.user = User.objects.create (name='John Doe', email='john@example.com', username='johndoe', uid='12345')
+            self.orderbeverage = OrderBeverage.objects.create(
+            
+            order_id =1,
+            beverage_id=1,
+
+        )
 
     def test_create_order_beverage(self):
         """Test creating  order beverage"""
         url = "/orderbeverages"
         orderbeverage = {
-            "order_id": "2",
+            "order_id": "1",
             "beverage_id": "1",
         }
 
@@ -76,9 +82,9 @@ class OrderBeverageViewTests(APITestCase):
 
     def test_delete_beverage(self):
         """Test delete beverage"""
-        orderbeverage = OrderBeverage.objects.first()
+        order_beverage = OrderBeverage.objects.first()
 
-        url = f'/orderbeverages/{orderbeverage.id}'
+        url = f'/orderbeverages/{order_beverage.id}'
         response = self.client.delete(url)
 
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)

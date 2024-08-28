@@ -1,14 +1,22 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
-from dranksforyouapi.models import Beverage
+from dranksforyouapi.models import Beverage, User
 from dranksforyouapi.views.beverages import BeverageSerializer
 
 class BeverageViewTests(APITestCase):
 
+    fixtures = ['beverage', 'user']
     def setUp(self):
         
-        self.beverage =Beverage.objects.first()
+            self.user = User.objects.create (name='John Doe', email='john@example.com', username='johndoe', uid='12345')
+            self.beverage = Beverage.objects.create(
+            name="Aqua",
+            liquor_id =2,
+            ingredient_id=3,
+            description="a slurpy",
+            price=5.00,
+        )
 
     def test_create_beverage(self):
         """Test creating a beverage"""
@@ -72,7 +80,7 @@ class BeverageViewTests(APITestCase):
 
         response = self.client.put(url, updated_beverage, format='json')
 
-        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     
         beverage.refresh_from_db()

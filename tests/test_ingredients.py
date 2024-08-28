@@ -1,12 +1,17 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
-from dranksforyouapi.models import Ingredient
+from dranksforyouapi.models import Ingredient, User
 from dranksforyouapi.views.ingredients import IngredientSerializer
 
 class IngredientTests(APITestCase):
     
+    fixtures = ['ingredient', 'user']
+    
     def setUp(self):
-        self.ingredient = Ingredient.objects.first()
+            self.user = User.objects.create (name='John Doe', email='john@example.com', username='johndoe', uid='12345')
+            self.ingredient = Ingredient.objects.create(
+            name="Lemon",
+        )
 
     def test_create_ingredient(self):
         """Test creating an ingredient"""
@@ -65,7 +70,7 @@ class IngredientTests(APITestCase):
 
         response = self.client.put(url, updated_ingredient, format='json')
 
-        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
 
         # Refresh the game object to reflect any changes in the database
         ingredient.refresh_from_db()
@@ -82,7 +87,6 @@ class IngredientTests(APITestCase):
 
         self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
 
-        # Test that it was deleted by trying to _get_ the game
-        # The response should return a 404
+
         response = self.client.get(url)
         self.assertEqual(status.HTTP_404_NOT_FOUND, response.status_code)

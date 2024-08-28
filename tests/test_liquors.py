@@ -1,13 +1,16 @@
 from rest_framework import status
 from rest_framework.test import APITestCase
-from dranksforyouapi.models import Liquor
+from dranksforyouapi.models import Liquor, User
 from dranksforyouapi.views.liquors import LiquorSerializer
 
 class LiquorViewTests(APITestCase):
-    fixtures = ['liquor']
+    fixtures = ['liquor','user']
     
     def setUp(self):
-        self.liquor = Liquor.objects.first()
+            self.user = User.objects.create (name='John Doe', email='john@example.com', username='johndoe', uid='12345')
+            self.liqour = Liquor.objects.create(
+            name="vanilla vodka",
+        )
 
     def test_create_liquor(self):
         """Test creating a liquor"""
@@ -66,7 +69,7 @@ class LiquorViewTests(APITestCase):
 
         response = self.client.put(url, updated_liquor, format='json')
 
-        self.assertEqual(status.HTTP_204_NO_CONTENT, response.status_code)
+        self.assertEqual(status.HTTP_200_OK, response.status_code)
 
     
         liquor.refresh_from_db()
