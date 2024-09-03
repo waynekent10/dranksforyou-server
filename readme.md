@@ -27,6 +27,24 @@ Relationships:
 
 The application uses foreign key relationships to ensure data integrity. For instance, each beverage is associated with a specific liquor and ingredient, and each order is linked to a user and the beverages included in the order.
 
+The Features that are available on this app:
+Admin view
+a view of orders
+liquors and ingredients names
+Bevearges with details and price. \
+
+Link to ERD: https://dbdiagram.io/d/Capstone-Final-66ae3d9c8b4bb5230e2116dc
+
+Link to board
+
+https://www.figma.com/board/NkSvpF2lEvmh45oiQvUDRB/DRANKS?node-id=0-1&node-type=CANVAS&t=oFFc0dKlXBVrn6BY-0
+
+
+
 Postman documentation for API 
 
 https://documenter.getpostman.com/view/24380795/2sA3sAhnpk
+
+Loom video
+
+https://www.loom.com/share/d149e0593b0d475d9b0ccf3f8b9d7a90
