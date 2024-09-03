@@ -4,4 +4,4 @@ from .beverage import Beverage
 
 class OrderBeverage(models.Model):
     order= models.ForeignKey(Order, on_delete=models.CASCADE)
-    beverage = models.ForeignKey(Beverage, on_delete=models.CASCADE, default=1)
+    beverage = models.ForeignKey(Beverage, on_delete=models.CASCADE)
