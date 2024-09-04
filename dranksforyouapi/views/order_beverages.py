@@ -32,9 +32,12 @@ class OrderBeverageView(ViewSet):
             serializer = OrderBeverageSerializer(order_beverage)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
     def destroy(self, request, pk):
+        try:
             order_beverage = OrderBeverage.objects.get(pk=pk)
             order_beverage.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'OrderBeverage deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+        except OrderBeverage.DoesNotExist:
+            return Response({'message': 'OrderBeverage not found'}, status=status.HTTP_404_NOT_FOUND)
         
 class OrderBeverageSerializer(serializers.ModelSerializer):
     
