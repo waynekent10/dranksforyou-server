@@ -5,3 +5,4 @@ from .liquors import LiquorView
 from .user_view import UserView
 from .orders import OrderView
 from .order_beverages import OrderBeverageView
+from .ingredient_beverages import IngredientBeverageView
