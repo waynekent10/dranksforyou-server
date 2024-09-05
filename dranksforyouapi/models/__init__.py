@@ -4,5 +4,5 @@ from .beverage import Beverage
 from .liquor import Liquor
 from .ingredient import Ingredient
 from .order_beverage import OrderBeverage
-from .moreingredient import MoreIngredient
+from .ingredient_beverage import IngredientBeverage
 from .liquor_beverage import LiquorBeverage
