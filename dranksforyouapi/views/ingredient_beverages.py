@@ -43,6 +43,6 @@ class IngredientBeverageSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = IngredientBeverage
-        fields = ('id', 'name', 'beverage')
+        fields = ('id', 'ingredient', 'beverage')
         depth = 1
             
