@@ -24,6 +24,7 @@ from dranksforyouapi.views.beverages import BeverageView
 from dranksforyouapi.views.liquors import LiquorView
 from dranksforyouapi.views.ingredients import IngredientView
 from dranksforyouapi.views.order_beverages import OrderBeverageView
+from dranksforyouapi.views.ingredient_beverages import IngredientBeverageView
 
 router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'users', UserView, 'user')
@@ -32,6 +33,7 @@ router.register(r'beverages', BeverageView, 'beverage')
 router.register(r'liquors', LiquorView, 'liquor')
 router.register(r'ingredients', IngredientView, 'ingredient')
 router.register(r'orderbeverages', OrderBeverageView, 'orderbeverage')
+router.register(r'ingredientbeverages', IngredientBeverageView, 'ingredientbeverage')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
