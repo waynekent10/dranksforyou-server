@@ -21,7 +21,8 @@ class LiquorView(ViewSet):
     def create(self, request):
         """Handle POST operations"""
         liquor = Liquor.objects.create(
-           name=request.data["name"]
+           name=request.data["name"],
+           image=request.data["image"]
        )
         serializer = LiquorSerializer(liquor)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -29,6 +30,7 @@ class LiquorView(ViewSet):
     def update(self, request, pk):
             liquor = Liquor.objects.get(pk=pk)
             liquor.name = request.data.get("name", liquor.name)
+            liquor.image = request.data["image"]
             liquor.save()
 
             return Response(None, status=status.HTTP_204_NO_CONTENT)
@@ -45,5 +47,5 @@ class LiquorView(ViewSet):
 class LiquorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Liquor
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'image']
         depth = 1
