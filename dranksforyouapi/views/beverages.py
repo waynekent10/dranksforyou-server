@@ -28,7 +28,8 @@ class BeverageView(ViewSet):
                 liquor_id=request.data["liquor_id"],
                 ingredient_id=request.data["ingredient_id"],
                 description=request.data["description"],
-                price=request.data["price"]
+                price=request.data["price"],
+                image=request.data["image"],
             )
             serializer = BeverageSerializer(beverage)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -44,6 +45,7 @@ class BeverageView(ViewSet):
             beverage.ingredient_id = request.data.get("ingredient_id", beverage.ingredient_id)
             beverage.description = request.data.get("description", beverage.description)
             beverage.price = request.data.get("price", beverage.price)
+            beverage.image = request.data["image"]
             beverage.save()
 
             serializer = BeverageSerializer(beverage)
@@ -63,5 +65,5 @@ class BeverageView(ViewSet):
 class BeverageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Beverage
-        fields = ['id', 'name', 'ingredient_id', 'liquor_id', 'description', 'price']
+        fields = ['id', 'name', 'ingredient_id', 'liquor_id', 'description', 'price', 'image']
         depth = 2
