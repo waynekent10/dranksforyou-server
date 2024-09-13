@@ -27,18 +27,12 @@ class IngredientView(ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
      
     def update(self, request, pk):
-        try:
             ingredient = Ingredient.objects.get(pk=pk)
             ingredient.name = request.data.get("name", ingredient.name)
             ingredient.save()
-        except Ingredient.DoesNotExist:
-            return Response({'message': 'Ingredient not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            return Response(None, status=status.HTTP_204_NO_CONTENT)
         
-        serializer = IngredientSerializer(ingredient, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk):
         """Handle DELETE requests to delete an ingredient"""
