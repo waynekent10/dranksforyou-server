@@ -21,7 +21,8 @@ class IngredientView(ViewSet):
     def create(self, request):
         """Handle POST operations"""
         ingredient = Ingredient.objects.create(
-           name=request.data["name"]
+           name=request.data["name"],
+           image=request.data["image"]
        )
         serializer = IngredientSerializer(ingredient)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -29,6 +30,7 @@ class IngredientView(ViewSet):
     def update(self, request, pk):
             ingredient = Ingredient.objects.get(pk=pk)
             ingredient.name = request.data.get("name", ingredient.name)
+            ingredient.image = request.data["image"]
             ingredient.save()
 
             return Response(None, status=status.HTTP_204_NO_CONTENT)
@@ -46,5 +48,5 @@ class IngredientView(ViewSet):
 class IngredientSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ingredient
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'image']
         depth = 1

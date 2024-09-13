@@ -28,14 +28,14 @@ from dranksforyouapi.views.ingredient_beverages import IngredientBeverageView
 from dranksforyouapi.views.liquor_beverages import LiquorBeverageView
 
 router = routers.DefaultRouter(trailing_slash=False)
-router.register(r'users', UserView, 'user')
-router.register(r'orders', OrderView, 'order')
-router.register(r'beverages', BeverageView, 'beverage')
-router.register(r'liquors', LiquorView, 'liquor')
-router.register(r'ingredients', IngredientView, 'ingredient')
-router.register(r'orderbeverages', OrderBeverageView, 'orderbeverage')
-router.register(r'ingredientbeverages', IngredientBeverageView, 'ingredientbeverage')
-router.register(r'liquorbeverages', LiquorBeverageView, 'liquorbeverage')
+router.register(r'user', UserView, 'user')
+router.register(r'order', OrderView, 'order')
+router.register(r'beverage', BeverageView, 'beverage')
+router.register(r'liquor', LiquorView, 'liquor')
+router.register(r'ingredient', IngredientView, 'ingredient')
+router.register(r'orderbeverage', OrderBeverageView, 'orderbeverage')
+router.register(r'ingredientbeverage', IngredientBeverageView, 'ingredientbeverage')
+router.register(r'liquorbeverage', LiquorBeverageView, 'liquorbeverage')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
