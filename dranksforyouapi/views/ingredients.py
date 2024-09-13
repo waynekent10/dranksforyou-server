@@ -6,12 +6,17 @@ from dranksforyouapi.models import Ingredient
 
 class IngredientView(ViewSet):
     def retrieve(self,request, pk):
+        """Handle GET requests for single activitys
+
+        Returns:
+            Response -- JSON serialized activity
+        """
         try:
             ingredient = Ingredient.objects.get(pk=pk)
             serializer = IngredientSerializer(ingredient, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except Ingredient.DoesNotExist:
-            return Response({'message': 'Ingredient not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Ingredient.DoesNotExist as ex:
+            return Response({'Ingredient does not exist': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
     
     def list(self, request): 
         ingredients = Ingredient.objects.all()
