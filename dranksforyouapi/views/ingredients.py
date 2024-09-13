@@ -20,15 +20,17 @@ class IngredientView(ViewSet):
     
     def create(self, request):
         """Handle POST operations"""
-        serializer = IngredientSerializer(data=request.data)
-        if serializer.is_valid():
-            ingredient = serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        ingredient = Ingredient.objects.create(
+           name=request.data["name"]
+       )
+        serializer = IngredientSerializer(ingredient)
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
      
     def update(self, request, pk):
         try:
             ingredient = Ingredient.objects.get(pk=pk)
+            ingredient.name = request.data.get("name", ingredient.name)
+            ingredient.save()
         except Ingredient.DoesNotExist:
             return Response({'message': 'Ingredient not found'}, status=status.HTTP_404_NOT_FOUND)
         
