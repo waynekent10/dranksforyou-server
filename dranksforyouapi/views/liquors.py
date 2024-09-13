@@ -10,8 +10,8 @@ class LiquorView(ViewSet):
             liquor = Liquor.objects.get(pk=pk)
             serializer = LiquorSerializer(liquor, context={'request': request})
             return Response(serializer.data, status=status.HTTP_200_OK)
-        except Liquor.DoesNotExist:
-            return Response({'message': 'Liquor not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Liquor.DoesNotExist as ex:
+            return Response({'Liquor does not exist': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
     
     def list(self, request): 
         liquors = Liquor.objects.all()

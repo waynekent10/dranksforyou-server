@@ -6,10 +6,10 @@ from dranksforyouapi.models import Ingredient
 
 class IngredientView(ViewSet):
     def retrieve(self,request, pk):
-        """Handle GET requests for single activitys
+        """Handle GET requests for single ingredient
 
         Returns:
-            Response -- JSON serialized activity
+            Response -- JSON serialized ingredient
         """
         try:
             ingredient = Ingredient.objects.get(pk=pk)
@@ -19,6 +19,11 @@ class IngredientView(ViewSet):
             return Response({'Ingredient does not exist': ex.args[0]}, status=status.HTTP_404_NOT_FOUND)
     
     def list(self, request): 
+        """Handle GET requests to get all ingredients
+
+        Returns:
+            Response -- JSON serialized list of ingredients
+        """
         ingredients = Ingredient.objects.all()
         serializer = IngredientSerializer(ingredients, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
