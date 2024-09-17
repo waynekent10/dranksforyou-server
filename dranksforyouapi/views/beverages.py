@@ -2,7 +2,7 @@ from django.http import HttpResponseServerError
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
 from rest_framework import serializers, status
-from dranksforyouapi.models import Beverage
+from dranksforyouapi.models import Beverage, User
 
 class BeverageView(ViewSet):
     def retrieve(self, request, pk):
@@ -23,7 +23,9 @@ class BeverageView(ViewSet):
     def create(self, request):
         """Handle POST requests to create a new beverage"""
         try:
+            user = User.objects.get(pk=request.data['user_id'])
             beverage = Beverage.objects.create(
+                user=user,
                 name=request.data["name"],
                 liquor_id=request.data["liquor_id"],
                 ingredient_id=request.data["ingredient_id"],
@@ -40,18 +42,21 @@ class BeverageView(ViewSet):
         """Handle PUT requests to update a beverage"""
         try:
             beverage = Beverage.objects.get(pk=pk)
+            user = User.objects.get(pk=request.data['user_id'])
+            beverage.user = user
             beverage.name = request.data.get("name", beverage.name)
             beverage.liquor_id = request.data.get("liquor_id", beverage.liquor_id)
             beverage.ingredient_id = request.data.get("ingredient_id", beverage.ingredient_id)
             beverage.description = request.data.get("description", beverage.description)
             beverage.price = request.data.get("price", beverage.price)
-            beverage.image = request.data["image"]
+            beverage.image = request.data.get("image", beverage.image)  # Corrected line
             beverage.save()
 
             serializer = BeverageSerializer(beverage)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Beverage.DoesNotExist:
             return Response({'message': 'Beverage not found'}, status=status.HTTP_404_NOT_FOUND)
+
 
     def destroy(self, request, pk):
         """Handle DELETE requests to delete a beverage"""
@@ -65,5 +70,5 @@ class BeverageView(ViewSet):
 class BeverageSerializer(serializers.ModelSerializer):
     class Meta:
         model = Beverage
-        fields = ['id', 'name', 'ingredient_id', 'liquor_id', 'description', 'price', 'image']
+        fields = ['id', 'name', 'ingredient_id', 'liquor_id', 'description', 'price', 'image', 'user']
         depth = 2
